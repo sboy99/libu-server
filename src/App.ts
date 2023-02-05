@@ -11,6 +11,7 @@ import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import routeNotFoundHandler from './middlewares/notFound.middleware';
 
 class App {
   public express: Application;
@@ -24,6 +25,7 @@ class App {
     this.initializeSequrityPackages();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
+    this.enableUnknownRouteHandling();
   }
   // initialize database
   private initializeDatabaseConnection: IReturnsVoid = () => {
@@ -61,6 +63,9 @@ class App {
   };
 
   //todo: enable unknown route handling
+  public enableUnknownRouteHandling: IReturnsVoid = () => {
+    this.express.use(routeNotFoundHandler);
+  };
 
   //todo: enable error handling
 
