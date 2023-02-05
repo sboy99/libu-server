@@ -1,8 +1,8 @@
-import type { Request, RequestHandler, Response } from 'express';
+import type { RequestHandler } from 'express';
 
-const routeNotFoundHandler: RequestHandler = (req: Request, res: Response) => {
+const routeNotFoundHandler: RequestHandler = (req, res) => {
   res.status(404).json({
-    message: 'Route not found',
+    message: 'Route does not exist',
   });
 };
 
