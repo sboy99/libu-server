@@ -3,14 +3,15 @@ import type {
   IReturnsVoid,
 } from '@/interfaces/app.interface';
 import type IRoute from '@/interfaces/route.interface';
-import compression from 'compression';
-import cors from 'cors';
 import type { Application } from 'express';
 
+import compression from 'compression';
+import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import errorHandler from './middlewares/errorHandling.middleware';
 import routeNotFoundHandler from './middlewares/notFound.middleware';
 
 class App {
@@ -26,6 +27,7 @@ class App {
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.enableUnknownRouteHandling();
+    this.enableErrorHandling();
   }
   // initialize database
   private initializeDatabaseConnection: IReturnsVoid = () => {
@@ -68,6 +70,9 @@ class App {
   };
 
   //todo: enable error handling
+  private enableErrorHandling: IReturnsVoid = () => {
+    this.express.use(errorHandler);
+  };
 
   // listen to server
   public listen: IReturnsVoid = () => {
