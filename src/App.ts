@@ -11,6 +11,7 @@ import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import routeNotFound from './middleware/notFound.middleware';
 
 class App {
   public express: Application;
@@ -61,6 +62,9 @@ class App {
   };
 
   //todo: enable unknown route handling
+  public unknownRoute: IReturnsVoid = () => {
+    this.express.use(routeNotFound);
+  };
 
   //todo: enable error handling
 
