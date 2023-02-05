@@ -13,6 +13,7 @@
   "ignorePatterns": ["dist", "node_modules"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
-    "prettier/prettier": "warn"
+    "prettier/prettier": "warn",
+    "@typescript-eslint/no-unsafe-member-access": "off"
   }
 }
