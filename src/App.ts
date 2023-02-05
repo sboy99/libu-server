@@ -60,7 +60,7 @@ class App {
   // initialize routes
   private initializeRoutes: IInitializeRoutes = (routes) => {
     routes.forEach((route) => {
-      this.express.use('api/v1', route.router);
+      this.express.use('/api/v1', route.router);
     });
   };
 
