@@ -1,8 +1,17 @@
+import getStructuredZodError from '@/utils/zod.error';
 import type { ErrorRequestHandler } from 'express';
+import { ZodError } from 'zod';
 
-const errorHandler: ErrorRequestHandler = (err, req, res) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const status = Number(err?.status ?? 500);
   const message = String(err?.message) ?? `Something went wrong`;
+
+  if (err instanceof ZodError) {
+    const structuredError = getStructuredZodError(err);
+    return res.status(200).json(structuredError);
+  }
+
   res.status(status).json({ message });
 };
 
