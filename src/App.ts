@@ -60,16 +60,14 @@ class App {
   // initialize routes
   private initializeRoutes: IInitializeRoutes = (routes) => {
     routes.forEach((route) => {
-      this.express.use('/api/v1', route.router);
+      this.express.use(`/api/v1${route.path}`, route.router);
     });
   };
 
-  //todo: enable unknown route handling
   public enableUnknownRouteHandling: IReturnsVoid = () => {
     this.express.use(routeNotFoundHandler);
   };
 
-  //todo: enable error handling
   private enableErrorHandling: IReturnsVoid = () => {
     this.express.use(errorHandler);
   };
