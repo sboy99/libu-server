@@ -2,9 +2,10 @@ import type { Model } from 'mongoose';
 import { model } from 'mongoose';
 import type { TUser } from './user.interface';
 
-import mongoose, { Schema } from 'mongoose';
+import encryptPassword from '@/utils/security/encryptPassword';
+import { Schema } from 'mongoose';
 
-const objectId = mongoose.Types.ObjectId;
+// const objectId = mongoose.Types.ObjectId;
 
 type TModel = Model<TUser>;
 
@@ -59,21 +60,29 @@ const UserSchema = new Schema<TUser, TModel>(
       trim: true,
       default: null,
     },
-    address: [
-      {
-        addressId: objectId,
-        ref: 'Address',
-      },
-    ],
-    bag: [
-      {
-        bagId: objectId,
-        ref: 'Bag',
-      },
-    ],
+    // todo: enable after Address model implementation
+    // address: [
+    //   {
+    //     addressId: objectId,
+    //     ref: 'Address',
+    //   },
+    // ],
+    // todo: enable after Bag model implementation
+    // bag: [
+    //   {
+    //     bagId: objectId,
+    //     ref: 'Bag',
+    //   },
+    // ],
   },
   { timestamps: true, validateBeforeSave: true }
 );
+
+UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return;
+  this.password = await encryptPassword(this.password);
+  next();
+});
 
 const UserModel = model<TUser, TModel>('User', UserSchema);
 
