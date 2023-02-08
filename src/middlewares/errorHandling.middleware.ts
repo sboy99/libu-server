@@ -9,7 +9,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
 
   if (err instanceof ZodError) {
     const structuredError = getStructuredZodError(err);
-    return res.status(200).json(structuredError);
+    return res.status(400).json(structuredError);
   }
 
   res.status(status).json({ message });
