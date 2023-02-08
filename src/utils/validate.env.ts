@@ -8,6 +8,8 @@ const validateEnv = (): void => {
     MONGO_DB_USER: str(),
     MONGO_DB_PWD: str(),
     MONGO_DB_PATH: str(),
+    COOKIE_SECRET: str(),
+    JWT_SECRET: str(),
     PORT: port({ default: 5000 }),
   });
 };
