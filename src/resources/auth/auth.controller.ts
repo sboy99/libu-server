@@ -4,6 +4,8 @@ import type { TLoginPayload, TRegisterPayload } from './auth.interface';
 
 import UserModel from '@/resources/user/user.model';
 import Errors from '@/utils/exceptions/errors';
+import attachCookies from '@/utils/jwt/attachCookies';
+import getUserLoginToken from '@/utils/jwt/getUserLoginToken';
 import verifyPassword from '@/utils/security/verifyPassword';
 
 class AuthController {
@@ -52,7 +54,19 @@ class AuthController {
       resMessage.type = 'warning';
       resMessage.message = 'Please verify your email address';
     }
-    // todo: attach access token and refresh token
+    // get user login token
+    const { refreshToken } = await getUserLoginToken(req, isUserExist._id);
+    //attach access token and refresh token
+    attachCookies(
+      res,
+      {
+        role: isUserExist.role,
+        userId: isUserExist._id.toString(),
+        userName: isUserExist.name,
+      },
+      refreshToken
+    );
+
     res.status(200).json(resMessage);
   };
 
