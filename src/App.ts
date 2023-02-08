@@ -6,6 +6,7 @@ import type IRoute from '@/interfaces/route.interface';
 import type { Application } from 'express';
 
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
@@ -54,6 +55,7 @@ class App {
     this.express.use(morgan('dev'));
     this.express.use(express.json());
     this.express.use(express.urlencoded({ extended: false }));
+    this.express.use(cookieParser(process.env.COOKIE_SECRET));
     this.express.use(compression());
   };
 
