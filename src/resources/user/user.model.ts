@@ -1,15 +1,10 @@
-import type { Model } from 'mongoose';
 import { model } from 'mongoose';
-import type { TUser } from './user.interface';
+import type { TUserDocument } from './user.interface';
 
 import encryptPassword from '@/utils/security/encryptPassword';
 import { Schema } from 'mongoose';
 
-// const objectId = mongoose.Types.ObjectId;
-
-type TModel = Model<TUser>;
-
-const UserSchema = new Schema<TUser, TModel>(
+const UserSchema = new Schema<TUserDocument>(
   {
     name: {
       type: String,
@@ -35,6 +30,7 @@ const UserSchema = new Schema<TUser, TModel>(
       required: [true, 'Password is required'],
       minlength: [6, 'Password must have atleast 6 characters'],
     },
+
     isVerified: {
       type: Boolean,
       default: false,
@@ -84,6 +80,6 @@ UserSchema.pre('save', async function (next) {
   next();
 });
 
-const UserModel = model<TUser, TModel>('User', UserSchema);
+const UserModel = model<TUserDocument>('User', UserSchema);
 
 export default UserModel;
