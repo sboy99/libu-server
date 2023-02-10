@@ -1,4 +1,8 @@
+import type { Document, Types } from 'mongoose';
 import type { z } from 'zod';
-import type userVSchema from './user.validation';
+import UserVSchema from './user.validation';
 
-export type TUser = z.infer<(typeof userVSchema)['create']>;
+const userVSchema = new UserVSchema();
+
+export type TUserDocument = z.infer<(typeof userVSchema)['create']> &
+  Document<Types.ObjectId>;
