@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Types } from 'mongoose';
 import { z } from 'zod';
 
 class TokenVSchema {
@@ -16,7 +16,7 @@ class TokenVSchema {
       required_error: 'user agent is required',
     }),
     isSuspended: z.boolean().default(false),
-    userId: z.instanceof(Schema.Types.ObjectId),
+    userId: z.instanceof(Types.ObjectId),
   });
 }
 
