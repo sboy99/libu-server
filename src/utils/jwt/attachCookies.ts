@@ -26,13 +26,13 @@ const attachCookies: AttachCookies = (res, payload, refreshToken) => {
   const jwtAccessToken = getAccessToken(payload);
   const jwtRefreshToken = getRefreshToken(payload, refreshToken);
 
-  res.cookie('access-token', jwtAccessToken, {
+  res.cookie('access_token', jwtAccessToken, {
     httpOnly: true,
     signed: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: _15MINS,
   }),
-    res.cookie('refresh-token', jwtRefreshToken, {
+    res.cookie('refresh_token', jwtRefreshToken, {
       httpOnly: true,
       signed: true,
       secure: process.env.NODE_ENV === 'production',
