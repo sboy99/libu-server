@@ -1,6 +1,9 @@
 import type IRoute from '@/interfaces/route.interface';
+import type { TUserDocument } from '@/resources/user/user.interface';
 import type { Request, Response } from 'express';
 import type { Types } from 'mongoose';
+
+export type Templates = 'emailVerification';
 
 interface JwtPayload {
   userId: string;
@@ -8,12 +11,26 @@ interface JwtPayload {
   role: 'reader' | 'librarian' | 'owner';
 }
 
-type UserTokenPayload = {
+export interface JwtUserPayload extends JwtPayload {
+  refreshToken?: string;
+}
+
+interface UserTokenPayload {
   ip: string;
   refreshToken: string;
   userAgent: string;
   userId: Types.ObjectId;
-};
+}
+
+interface OTPConsumer {
+  name?: string;
+  otp: number;
+  email: string;
+  serviceEmail?: string;
+  resend?: boolean;
+}
+
+type HtmlTemplteProp = Omit<OTPConsumer, 'email'>;
 
 export declare type IReturnsVoid = () => void;
 export declare type IInitializeRoutes = (routes: IRoute[]) => void;
@@ -34,3 +51,12 @@ export declare type GetUserLoginToken = (
   req: Request,
   userId: Types.ObjectId
 ) => Promise<UserTokenPayload | never>;
+
+export declare type CreateUserPayload = (
+  user: TUserDocument,
+  refreshToken?: string
+) => JwtUserPayload;
+
+export declare type MailSender = (consumer: OTPConsumer) => Promise<void>;
+
+export declare type UseHtmlTemplte = (prop: HtmlTemplteProp) => string;
