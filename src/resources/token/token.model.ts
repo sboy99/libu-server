@@ -1,12 +1,9 @@
-import type { Model } from 'mongoose';
 import { model } from 'mongoose';
 
 import { Schema } from 'mongoose';
-import type { TUserToken } from './token.interface';
+import type { TUserTokenDocument } from './token.interface';
 
-type TModel = Model<TUserToken>;
-
-const TokenSchema = new Schema<TUserToken, TModel>(
+const TokenSchema = new Schema<TUserTokenDocument>(
   {
     refreshToken: {
       type: String,
@@ -33,6 +30,6 @@ const TokenSchema = new Schema<TUserToken, TModel>(
   { timestamps: true }
 );
 
-const TokenModel = model<TUserToken, TModel>('Token', TokenSchema);
+const TokenModel = model<TUserTokenDocument>('Token', TokenSchema);
 
 export default TokenModel;
