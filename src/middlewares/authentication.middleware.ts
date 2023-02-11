@@ -21,7 +21,7 @@ import verifyJwtToken from '@/utils/jwt/verifyJwtToken';
 const authenticate: ApiRequestHandler = async (req, res, next) => {
   const hasAccessToken = req.signedCookies['access_token'] as string;
   const hasRefreshToken = req.signedCookies['refresh_token'] as string;
-  if (!hasAccessToken || !hasRefreshToken)
+  if (!hasAccessToken && !hasRefreshToken)
     throw new Errors.UnauthorizedError('Session expired! Please re-login');
   try {
     if (hasAccessToken) {
@@ -34,7 +34,6 @@ const authenticate: ApiRequestHandler = async (req, res, next) => {
       userId: jwtUser.userId,
       refreshToken,
     });
-
     if (isActiveUser && !isActiveUser.isSuspended) {
       attachCookies(res, jwtUser, refreshToken as string);
       req.user = jwtUser;
