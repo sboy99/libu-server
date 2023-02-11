@@ -9,7 +9,12 @@ const verifyJwtToken = (token: string): JwtUserPayload => {
     process.env.JWT_SECRET as string
   ) as JwtUserPayload;
 
-  return jwtPayload;
+  return {
+    role: jwtPayload.role,
+    userId: jwtPayload.userId,
+    userName: jwtPayload.userName,
+    refreshToken: jwtPayload.refreshToken,
+  };
 };
 
 export default verifyJwtToken;
