@@ -12,6 +12,6 @@ export const validateBody: Validator = (vSchema) => async (req, res, next) => {
 export const validateParams: Validator =
   (vSchema) => async (req, res, next) => {
     const validData = await vSchema.parseAsync(req.params);
-    req.body = validData;
+    req.params = validData;
     next();
   };
