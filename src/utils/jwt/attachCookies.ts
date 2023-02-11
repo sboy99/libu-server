@@ -10,9 +10,10 @@ import jwt from 'jsonwebtoken';
 
 const getAccessToken: GetAccessToken = (payload) => {
   const jwtSecret: Secret = process.env.JWT_SECRET as string;
-  return jwt.sign(payload, jwtSecret, {
+  const token = jwt.sign(payload, jwtSecret, {
     expiresIn: _15MINS,
   });
+  return token;
 };
 
 const getRefreshToken: GetRefreshToken = (payload, refreshToken) => {
@@ -31,13 +32,13 @@ const attachCookies: AttachCookies = (res, payload, refreshToken) => {
     signed: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: _15MINS,
-  }),
-    res.cookie('refresh_token', jwtRefreshToken, {
-      httpOnly: true,
-      signed: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: _3DAY,
-    });
+  });
+  res.cookie('refresh_token', jwtRefreshToken, {
+    httpOnly: true,
+    signed: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: _3DAY,
+  });
 };
 
 export default attachCookies;
