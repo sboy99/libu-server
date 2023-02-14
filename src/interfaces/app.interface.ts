@@ -5,6 +5,10 @@ import type { Types } from 'mongoose';
 
 export type Templates = 'emailVerification';
 
+export interface IStringKeyedObject {
+  [key: string]: unknown;
+}
+
 interface JwtPayload {
   userId: string;
   userName: string;
