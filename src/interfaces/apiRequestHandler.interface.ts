@@ -2,11 +2,16 @@ import type { RequestHandler } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import type { ParsedQs } from 'qs';
 
-type ApiRequestHandler<TReq = unknown, TRes = unknown> = RequestHandler<
-  ParamsDictionary,
+type ApiRequestHandler<
+  TReq = unknown,
+  TRes = unknown,
+  TParams = unknown,
+  TQuery = unknown
+> = RequestHandler<
+  ParamsDictionary & TParams,
   TRes,
   TReq,
-  ParsedQs,
+  ParsedQs & TQuery,
   Record<string, unknown>
 >;
 
