@@ -1,9 +1,10 @@
 import type ApiRequestHandler from '@/interfaces/apiRequestHandler.interface';
+import StockService from '../services/stock/stock.service';
 import BookModel from './book.model';
 
 class BookController {
   private db = BookModel;
-
+  private stockService = new StockService();
   /**
    *
    * @param req express request
