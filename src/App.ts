@@ -5,6 +5,7 @@ import type {
 import type IRoute from '@/interfaces/route.interface';
 import type { Application } from 'express';
 
+import { v2 as cloudinary } from 'cloudinary';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -24,6 +25,7 @@ class App {
     this.port = port;
 
     this.initializeDatabaseConnection();
+    this.initializeConfigs();
     this.initializeSequrityPackages();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
@@ -42,6 +44,15 @@ class App {
       )
       .then(() => console.log(`connected to DB`))
       .catch((e) => console.log(e));
+  };
+
+  private initializeConfigs: IReturnsVoid = () => {
+    cloudinary.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+      secure: true,
+    });
   };
 
   // initialize sequrity packages
