@@ -1,7 +1,9 @@
 import type ApiRequestHandler from '@/interfaces/apiRequestHandler.interface';
-import type { AnyZodObject } from 'zod';
+import type { AnyZodObject, ZodEffects } from 'zod';
 
-type Validator = (vSchema: AnyZodObject) => ApiRequestHandler;
+type Validator = (
+  vSchema: AnyZodObject | ZodEffects<AnyZodObject>
+) => ApiRequestHandler;
 
 export const validateBody: Validator = (vSchema) => async (req, res, next) => {
   const validBody = await vSchema.parseAsync(req.body);
