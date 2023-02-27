@@ -34,6 +34,11 @@ interface OTPConsumer {
   resend?: boolean;
 }
 
+export interface IUploadedImage {
+  id: string;
+  url: string;
+}
+
 type HtmlTemplteProp = Omit<OTPConsumer, 'email'>;
 
 export declare type IReturnsVoid = () => void;
