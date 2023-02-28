@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import ReviewModel from '../review/review.model';
 import type { TBookDocument } from './book.interface';
 
 const bookSchema = new Schema<TBookDocument>(
@@ -32,7 +33,7 @@ const bookSchema = new Schema<TBookDocument>(
     },
     images: [
       {
-        publicId: {
+        id: {
           type: String,
           required: [true, 'image public id is required'],
           trim: true,
@@ -50,11 +51,13 @@ const bookSchema = new Schema<TBookDocument>(
     },
     genre: {
       type: Schema.Types.ObjectId,
+      ref: 'Genre',
       required: [true, 'genre of the book is required'],
     },
     ISBN: {
       type: String,
       required: [true, 'ISBN is required'],
+      unique: true,
       trim: true,
     },
     price: {
@@ -69,6 +72,11 @@ const bookSchema = new Schema<TBookDocument>(
         message: 'visibility should be either public or private',
       },
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'specify the user who created it'],
+    },
     publishedAt: {
       type: Date,
       default: null,
@@ -79,7 +87,11 @@ const bookSchema = new Schema<TBookDocument>(
     },
     ratings: {
       type: Number,
-      default: 0.0,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
     },
     isDeleted: {
       type: Boolean,
@@ -93,10 +105,39 @@ const bookSchema = new Schema<TBookDocument>(
   {
     timestamps: true,
     validateBeforeSave: true,
-    virtuals: true,
     toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+bookSchema.index({ name: 1, author: 1 }, { unique: true });
+bookSchema.virtual('reviews', {
+  ref: 'Review',
+  localField: '_id',
+  foreignField: 'bookId',
+  justOne: false,
+  limit: 5,
+  options: {
+    match: { isDeleted: false },
+    select: 'ratings reviewedBy reviews',
+    populate: {
+      path: 'reviewedBy',
+      select: 'name email isVerified',
+    },
+  },
+});
+
+// todo: stock virtuals
+
+bookSchema.pre('save', async function () {
+  if (this.isModified('isDeleted') && this.isDeleted) {
+    console.log('pre save');
+    await ReviewModel.updateMany(
+      { bookId: this._id, isDeleted: false },
+      { isDeleted: true }
+    );
+    this.deletedAt = new Date(Date.now());
+  }
+});
 
 const BookModel = model<TBookDocument>('Book', bookSchema);
 export default BookModel;
