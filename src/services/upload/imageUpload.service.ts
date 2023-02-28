@@ -1,4 +1,5 @@
 import type { IUploadedImage } from '@/interfaces/app.interface';
+import Errors from '@/utils/exceptions/errors';
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs/promises';
 
@@ -12,17 +13,22 @@ class ImageUploadService {
    *
    */
   public uploadToCloudinary = async (
-    imagePath: string,
+    filePath: string,
     folder?: string
   ): Promise<IUploadedImage> => {
-    const { public_id, secure_url } = await this.uploader.upload(imagePath, {
-      folder,
-    });
-    await this.deleteTempFile(imagePath);
-    return {
-      id: public_id,
-      url: secure_url,
-    };
+    try {
+      const { public_id, secure_url } = await this.uploader.upload(filePath, {
+        folder,
+      });
+      return {
+        id: public_id,
+        url: secure_url,
+      };
+    } catch (error) {
+      throw new Errors.BadRequestError('image upload failed');
+    } finally {
+      await this.deleteTempFile(filePath);
+    }
   };
 }
 
