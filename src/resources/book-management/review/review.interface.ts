@@ -1,11 +1,24 @@
-import type { Document, Types } from 'mongoose';
+import type { Document, Model, Types } from 'mongoose';
 import type { z } from 'zod';
 import ReviewVSchema from './review.validation';
 
 export interface IAdditonalReviewFields {
+  /**
+   *
+   */
   reviewedBy: Types.ObjectId;
+  /**
+   *
+   */
   bookId: Types.ObjectId;
+  /**
+   *
+   */
   isDeleted: boolean;
+}
+
+interface IStaticFunctionsOfReviewModel {
+  calculateReviews(bookId: Types.ObjectId): Promise<void>;
 }
 
 const reviewVSchema = new ReviewVSchema();
@@ -18,3 +31,6 @@ export type TReviewParams = z.infer<
 export type TReviewDocument = TCreateReview &
   IAdditonalReviewFields &
   Document<Types.ObjectId>;
+
+export type TReviewModel = Model<TReviewDocument> &
+  IStaticFunctionsOfReviewModel;
