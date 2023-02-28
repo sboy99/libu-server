@@ -3,12 +3,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import Errors from '@/utils/exceptions/errors';
 import type { RequestHandler } from 'express';
+import fs from 'fs';
 import multer from 'multer';
+import path from 'path';
 
-function createStorage(dir: string): multer.StorageEngine {
+function createStorage(): multer.StorageEngine {
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, `./tmp${dir}`);
+      const fPath = path.join(process.cwd(), 'tmp');
+      fs.mkdir(fPath, { recursive: true }, (err) => {
+        if (err) console.error(`tmp can not be created`);
+      });
+      cb(null, `./tmp`);
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname);
@@ -26,12 +32,11 @@ interface IImageUploadOptions {
 
 const imageUploader = (
   fieldName: string,
-  options: IImageUploadOptions,
-  dir = ''
+  options: IImageUploadOptions
 ): RequestHandler => {
   const { uploadType, uploadLimit, maxUploadSize } = options;
 
-  const storage = createStorage(dir);
+  const storage = createStorage();
   const maxFileSize = maxUploadSize * 1024 * 1024;
 
   const uploader = multer({
