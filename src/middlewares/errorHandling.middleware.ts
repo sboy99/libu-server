@@ -2,6 +2,7 @@
 import type IResMessage from '@/interfaces/responseMessage.interface';
 import getStructuredZodError from '@/utils/zod.error';
 import type { ErrorRequestHandler } from 'express';
+import { MongoServerError } from 'mongodb';
 import { MulterError } from 'multer';
 import { ZodError } from 'zod';
 
@@ -21,6 +22,31 @@ const errorHandler: ErrorRequestHandler<
       message: 'input data validation error',
       errors: structuredError,
     });
+  }
+
+  // database validation error
+  if (err instanceof MongoServerError) {
+    if (err.code === 11000) {
+      const e = err as typeof err & {
+        keyValue: Record<string, string | number>;
+      };
+
+      const errors = Object.keys(e.keyValue).reduce<Record<string, string>>(
+        (acc, curr) => {
+          acc[
+            curr
+          ] = `${e.keyValue[curr]} already exist, ${curr} should be unique`;
+          return acc;
+        },
+        {}
+      );
+
+      return res.status(400).json({
+        type: 'error',
+        message: 'data sould be unique',
+        errors,
+      });
+    }
   }
 
   // file upload error
