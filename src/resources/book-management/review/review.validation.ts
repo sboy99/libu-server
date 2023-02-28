@@ -38,9 +38,8 @@ class ReviewVSchema {
           .max(500, 'review title should be atmost 500 characters long')
           .trim(),
       })
-      .array()
       .optional()
-      .default([]),
+      .transform((review) => (review ? [{ ...review }] : [])),
   });
   public update = z.object({
     ratings: z
@@ -77,8 +76,8 @@ class ReviewVSchema {
           .max(500, 'review title should be atmost 500 characters long')
           .trim(),
       })
-      .array()
-      .optional(),
+      .optional()
+      .transform((review) => (review ? [{ ...review }] : [])),
   });
   /**
    *
