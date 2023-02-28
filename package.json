@@ -4,9 +4,10 @@
   "main": "index.js",
   "repository": "https://github.com/sboy99/libu-server.git",
   "author": "Sagar Bera <contact.sagarbera@gmail.com>",
+  "description": "It is the back-end portion of Libu modern library. It is a REST API getting built using Node Js, Express Js and Mongodb as a  database. ",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0",
+    "node": ">=16.17.0",
     "yarn": ">=1.22.0",
     "npm": "please-use-yarn"
   },

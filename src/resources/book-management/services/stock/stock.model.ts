@@ -5,6 +5,7 @@ const stockSchema = new Schema<TStockDocument>(
   {
     bookId: {
       type: Schema.Types.ObjectId,
+      ref: 'Book',
       required: [true, 'BookId is required for stock'],
     },
     hardCover: {
@@ -18,6 +19,10 @@ const stockSchema = new Schema<TStockDocument>(
     paperCopy: {
       type: Number,
       default: 0,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

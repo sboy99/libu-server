@@ -6,7 +6,7 @@ export interface TAdditionalFields {
   /**
    *
    */
-  publishedAt: Date;
+  publishedAt: Date | null;
   /**
    *
    */
@@ -18,7 +18,7 @@ export interface TAdditionalFields {
   /**
    *
    */
-  deletedAt: Date;
+  deletedAt: Date | null;
   /**
    *
    */

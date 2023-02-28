@@ -127,10 +127,19 @@ bookSchema.virtual('reviews', {
 });
 
 // todo: stock virtuals
+bookSchema.virtual('stock', {
+  ref: 'Stock',
+  localField: '_id',
+  foreignField: 'bookId',
+  justOne: true,
+  options: {
+    match: { isDeleted: false },
+    select: '-createdAt -updatedAt -isDeleted -__v',
+  },
+});
 
 bookSchema.pre('save', async function () {
   if (this.isModified('isDeleted') && this.isDeleted) {
-    console.log('pre save');
     await ReviewModel.updateMany(
       { bookId: this._id, isDeleted: false },
       { isDeleted: true }
