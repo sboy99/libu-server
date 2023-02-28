@@ -12,6 +12,10 @@ import type { IUploadedImage } from '@/interfaces/app.interface';
 import ImageUploadService from '@/services/upload/imageUpload.service';
 import Errors from '@/utils/exceptions/errors';
 import getObjectIdFromString from '@/utils/getObjectIdFromString';
+import type {
+  TStockDocument,
+  TUpsertStock,
+} from '../services/stock/stock.interface';
 import StockService from '../services/stock/stock.service';
 import BookModel from './book.model';
 
@@ -22,22 +26,63 @@ class BookController {
   /**
    * **Create a brand new book**
    * - Add created by `userId` in book data
-   * - Create a book with new data
+   * - Search a book with `ISBN`
+   * - If book found and if the book is not deleted throw already exist error otherwise
+   * - Update the book with new data and set `isDeleted` false and send a successfull response
+   * - Otherwise create a book with new data
+   * - Create a stock collection of the book
    * - Send a successful response with created data;
    * @param req express request
    * @param res express responase
    */
   public create: ApiRequestHandler<
     TBookCreate,
-    IResMessage & { data: TBookDocument }
+    IResMessage & {
+      data: TBookDocument;
+      stock?: TStockDocument;
+    }
   > = async (req, res) => {
     const bookData = req.body as TBookCreate & TAdditionalFields;
     bookData.createdBy = getObjectIdFromString(req.user.userId);
+    const isBookPresent = await BookModel.findOne({ ISBN: bookData.ISBN });
+
+    if (isBookPresent) {
+      if (isBookPresent.isDeleted) {
+        bookData.isDeleted = false;
+        bookData.deletedAt = null;
+        bookData.publishedAt = null;
+        bookData.ratings = 0;
+        bookData.totalReviews = 0;
+        bookData.createdBy = getObjectIdFromString(req.user.userId);
+        // Todo: update createdAt
+        const book = (await BookModel.findOneAndUpdate(
+          { _id: isBookPresent._id },
+          bookData,
+          { lean: true, new: true }
+        )) as TBookDocument;
+
+        const stock = (await this.useStockService.resetStock(
+          isBookPresent._id
+        )) as TStockDocument;
+
+        return res.status(201).json({
+          type: 'success',
+          message: 'book created successfully',
+          data: book,
+          stock: stock,
+        });
+      } else {
+        throw new Errors.BadRequestError('book already exist');
+      }
+    }
+
     const book = await this.db.create(bookData);
-    res.status(200).json({
+    const stock = await this.useStockService.upsertStock(book._id, book);
+    res.status(201).json({
       type: 'success',
       message: 'book created successfully',
       data: book,
+      stock,
     });
   };
   /**
@@ -95,8 +140,9 @@ class BookController {
     const { id } = req.params;
     const book = await BookModel.findOne({ _id: id, isDeleted: false })
       .select('-isDeleted -deletedAt -updatedAt -__v')
+      .populate('genre', '-isDeleted -__v')
       .populate('reviews')
-      .populate('genre', '-isDeleted -__v');
+      .populate('stock');
 
     if (!book) throw new Errors.NotFoundError('requested book not found');
 
@@ -165,7 +211,6 @@ class BookController {
       const { id } = req.params;
       const book = await BookModel.findOne({ _id: id, isDeleted: false });
       if (!book) throw new Errors.NotFoundError('book not found');
-      console.log(book);
       book.isDeleted = true;
       book.createdBy = getObjectIdFromString(req.user.userId);
       await book.save();
@@ -194,6 +239,34 @@ class BookController {
       type: 'success',
       message: 'image was uploaded successfully',
       image,
+    });
+  };
+  /**
+   *
+   * @param req express request
+   * @param res express responase
+   */
+  public manageStocks: ApiRequestHandler<
+    TUpsertStock,
+    IResMessage & {
+      data: TStockDocument | null;
+    },
+    TBookParams
+  > = async (req, res) => {
+    const hasUpdatableKey = Object.keys(req.body);
+    if (hasUpdatableKey.length < 1) {
+      return res.status(200).json({
+        type: 'warning',
+        message: 'nothing to update in this stock',
+        data: null,
+      });
+    }
+    const { id } = req.params;
+    const stock = await this.useStockService.upsertStock(id, req.body);
+    res.status(200).json({
+      type: 'success',
+      message: 'Stock Updated',
+      data: stock,
     });
   };
 }

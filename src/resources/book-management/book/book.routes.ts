@@ -8,6 +8,7 @@ import {
   validateParams,
 } from '@/middlewares/validation.middleware';
 import { Router } from 'express';
+import StockVSchema from '../services/stock/stock.validation';
 import BookController from './book.controller';
 import BookVSchema from './book.validation';
 
@@ -16,10 +17,12 @@ class BookRoutes implements IRoute {
   public router: Router = Router();
   private controller: InstanceType<typeof BookController>;
   private vSchema: InstanceType<typeof BookVSchema>;
+  private stockVSchema: InstanceType<typeof StockVSchema>;
 
   constructor() {
     this.controller = new BookController();
     this.vSchema = new BookVSchema();
+    this.stockVSchema = new StockVSchema();
     this.initializeRoutes();
   }
   private initializeRoutes = () => {
@@ -66,8 +69,15 @@ class BookRoutes implements IRoute {
         this.controller.deleteOneById
       );
     /**
-     * todo: integrate stocks and reviews
+     * endpoint `/api/v1/books/:id/stock`
      */
+    this.router.route('/:id/stock').patch(
+      validateParams(this.vSchema.params),
+      authenticate,
+      // Todo: protect this route, open only when payment is successfull
+      validateBody(this.stockVSchema.upsertStock),
+      this.controller.manageStocks
+    );
   };
 }
 
