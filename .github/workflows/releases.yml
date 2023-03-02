@@ -16,9 +16,8 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
 
-      - name: create release
-      - uses: actions/checkout@v2
-      - uses: ncipollo/release-action@v1
+      - name: create release      
+        uses: ncipollo/release-action@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
