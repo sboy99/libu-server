@@ -9,7 +9,7 @@ export interface IStringKeyedObject {
   [key: string]: unknown;
 }
 
-interface JwtPayload {
+export interface JwtPayload {
   userId: string;
   userName: string;
   role: 'reader' | 'librarian' | 'owner';
